@@ -1,0 +1,8 @@
+{
+  "name": "advent2023",
+  "version": "0.0.1",
+  "type": "module",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
