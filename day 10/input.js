@@ -1,8 +1,8 @@
-export const testInput = `-L|F7
-7S-7|
-L|7||
--L-J|
-L|-JF`;
+export const testInput = `..F7.
+.FJ|.
+SJ.L7
+|F--J
+LJ...`;
 export const dataInput = `7-L7|F--F7F-|-FF--|FFL|7.FFL7|FL-F|-LL77FFJFL-7.FF-J.F77.7.F7F777-77.FF-LF7F.JJ.F7|-|.FFJF7..77F7|-7-FF7.|-F77L-|-|-77.F77FLJ7.F-LL--F7FL7.J
 |7F|-7.FJLLJL7LL-JLJ7JFF.JL|7.7LFF.||||F7-J7.LL--J7L7JL7.|.LFF-7-7.|7--.||FF7-LFJF-.||-7FJ.FL|-F|L-J--7J7FF-7-L7L-7-|JF7-7-|FFFJ|.L7F|JL-77.
 7FL|-7.L-|L7.|J|J-|J|LLF.|7|LL7J.-LJ-7FFJ|LF|.F|.|J-7.|.|F7.7F7-F7-L||..FLFL|J7..|J.FL-JJJF-7LJ.FL7F7|JF-.--F7LF-LJ---|JJ.-J7||F-..JJL-7|.F7
