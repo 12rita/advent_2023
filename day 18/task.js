@@ -1,6 +1,6 @@
 import {dataInput, testInput} from "./input.js";
 
-const lines = dataInput.split("\n");
+const lines = testInput.split("\n");
 
 // for (let i = 0; i < lines.length-1; i++) {
 //     ground[i] = [];
@@ -42,76 +42,111 @@ const getOutline = (lines) => {
     })
     return ground;
 }
+
 const ground = getOutline(lines);
-const getInner = (ground) => {
-    ground.forEach((row, y) => {
+const checkCellInside = (x, y, ground) => {
 
-            let leftBorderIdx = row.findIndex((cell) => cell === '#');
-            let continuousDashes = 0;
-            let leftBorder = false;
-            // const rightBorder = ground[y].lastIndexOf('#');
-            for (let x = leftBorderIdx; x < row.length; x++) {
-                // console.log({leftBorder, y, line: ground[y]})
-                if (row[x] === '#') {
-                    continuousDashes++;
-                    if (continuousDashes > 1) {
+    let leftBorder = false;
+    let rightBorder = false;
+    let upperBorder = false;
+    let lowerBorder = false;
+    for (let i = x; i >= 0; i--) {
+        if (ground[y][i] === '#') leftBorder = true;
+    }
+    for (let i = x; i < ground[y].length; i++) {
+        if (ground[y][i] === '#') rightBorder = true;
+    }
+    for (let i = y; i >= 0; i--) {
+        if (ground[i][x] === '#') upperBorder = true;
+    }
+    for (let i = y; i < ground.length; i++) {
+        if (ground[i][x] === '#') lowerBorder = true;
+    }
+    // console.log({x, y, row: ground[y], leftBorder, rightBorder, upperBorder, lowerBorder})
 
-                    }
-                    else if (!leftBorder){
-                        leftBorder = true;
-                        leftBorderIdx = x;
-                    }
-                    else if (leftBorder){
-                        // ground[y][x] = '#';
-                        leftBorder = false;
-                        leftBorderIdx = -1;
-                    }
-
-                } else {
-                    if (continuousDashes >1){
-                        const upperCell = ground[y-1]?.[x] === '#';
-                        const lowerCell = ground[y+1]?.[x] === '#';
-                        leftBorder = false;
-                        leftBorderIdx=-1;
-                        continuousDashes = 0;
-                    }
-
-                    if (leftBorder) {
-                        ground[y][x] = '#';
-                    }
-                }
-            }
-
-
-    })
+    return leftBorder && rightBorder && upperBorder && lowerBorder;
 }
 
-// getInner(ground)
 
-let sum = 0;
+
+
+const shoelaceS = (arrayOfVertex) => {
+    let leftSum = 0;
+    for (let i = 0; i < arrayOfVertex.length - 1; i++) {
+        leftSum += Number(arrayOfVertex[i]?.x) * Number(arrayOfVertex[i + 1]?.y)
+    }
+    leftSum += Number(arrayOfVertex[arrayOfVertex.length - 1]?.x) * Number(arrayOfVertex[0]?.y)
+
+    let rightSum = 0;
+    for (let i = 0; i < arrayOfVertex.length - 1; i++) {
+        rightSum += Number(arrayOfVertex[i]?.y) * Number(arrayOfVertex[i + 1]?.x)
+    }
+    rightSum -= Number(arrayOfVertex[arrayOfVertex.length - 1]?.y) * Number(arrayOfVertex[0]?.x)
+    return Math.abs(leftSum - rightSum) * 0.5
+}
+const getInner = (ground) => {
+    const vertexes = [];
+
+    ground.forEach((row, y) => {
+        row.forEach((cell, x) => {
+                if (cell === '#') {
+                    vertexes.push({x, y})
+                }
+            }
+        )
+    })
+    console.log({vertexes})
+    const S = shoelaceS(vertexes);
+    console.log({S});
+    return S;
+
+
+
+
+}
+
+
+const coloredGround = getInner(ground)
+
+
 // console.log(ground)
 
-const maxLineLength = ground.reduce((acc, curr) => Math.max(acc, curr.length), 0);
-const beauty = ground.map((line) => {
-    // console.log(line.length)
-    let newLine = '';
-    for (let i = 0; i < maxLineLength; i++) {
-        const curr = line[i];
-        if (curr === '#') sum++;
-        newLine += curr || '.';
 
-    }
+const beautify = (ground) => {
+    let sum = 0;
+    const maxLineLength = ground.reduce((acc, curr) => Math.max(acc, curr.length), 0);
+    // console.log({localGround})
 
-    // console.log(newLine)
-    return newLine
+    return {
+        matrix: [...ground].map((line) => {
+            // console.log(line.length)
+            let newLine = '';
+            for (let i = 0; i < maxLineLength; i++) {
+                const curr = line[i];
+                if (curr === '#') sum++;
+                newLine += curr || '.';
 
-});
-console.log(beauty, sum)
-const visualize = () => {
+            }
+
+            // console.log(newLine)
+            return newLine
+
+        }), sum
+    };
+
+}
+
+
+const outer = beautify(ground);
+// const inner = beautify(coloredGround);
+
+console.log({outerSum: outer.sum})
+const visualize = (outer, inner) => {
     const el = document.getElementById('root');
     const container = document.createElement('div');
+    const innerContainer = document.createElement('div');
 
-    beauty.forEach((row) => {
+    outer.forEach((row) => {
         const newRow = document.createElement('div');
         newRow.style.display = 'flex';
         row.split('').forEach(cell => {
@@ -126,10 +161,32 @@ const visualize = () => {
 
 
     });
+
+   inner && inner.forEach((row) => {
+        const newRow = document.createElement('div');
+        newRow.style.display = 'flex';
+        row.split('').forEach(cell => {
+            const newCell = document.createElement('div');
+            newCell.style.backgroundColor = cell === '#' ? '#dc92eb' : '#92ebd3';
+            newCell.style.width = '10px';
+            newCell.style.minWidth = '10px';
+            newCell.innerText = cell
+            newRow.appendChild(newCell);
+        })
+        innerContainer.appendChild(newRow);
+
+
+    });
+    const doubleContainer = document.createElement('div');
+    doubleContainer.style.display = 'flex';
+    doubleContainer.style.gap = '20px';
+    doubleContainer.appendChild(innerContainer);
+    doubleContainer.appendChild(container);
+
     // console.log(container)
-    el.appendChild(container);
+    el.appendChild(doubleContainer);
 }
-visualize()
+visualize(outer.matrix)
 
 
 //6810 too low
